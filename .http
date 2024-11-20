@@ -1,0 +1,36 @@
+@host=http://localhost:3000
+
+### Get all users
+GET {{host}}/api/users
+Accept: application/json
+
+### Get specific user by ID (replace with an actual user ID, e.g., 1)
+GET {{host}}/api/users/1
+Accept: application/json
+
+### Get all playlists
+GET {{host}}/api/playlists
+Accept: application/json
+
+### Create a new playlist
+POST {{host}}/api/playlists
+Content-Type: application/json
+
+{
+  "name": "My Awesome Playlist",
+  "description": "A playlist with cool tracks",
+  "ownerId": 1,
+  "trackIds": [1, 2, 3]
+}
+
+### Get specific playlist by ID (replace with an actual playlist ID, e.g., 1)
+GET {{host}}/api/playlists/1
+Accept: application/json
+
+### Get all tracks
+GET {{host}}/api/tracks
+Accept: application/json
+
+### Get specific track by ID (replace with an actual track ID, e.g., 1)
+GET {{host}}/api/tracks/1
+Accept: application/json
