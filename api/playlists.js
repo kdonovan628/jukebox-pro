@@ -4,9 +4,12 @@ const prisma = require("../prisma");
 const { authenticate } = require("./auth")
 
 router.get(`/`, authenticate, async (req, res, next) => {
+
+  console.log(req.user.id)
+
   try {
     const playlists = await prisma.playlist.findMany({
-      where: { ownerId: req.customer.id },
+      where: { ownerId: req.user.id },
     });
     res.json(playlists);
   } catch (error) {
@@ -21,7 +24,7 @@ router.post(`/`, authenticate, async (req, res, next) => {
       data: {
         name,
         description, 
-        owner: { connect: { id: req.customer.id } }, 
+        owner: { connect: { id: req.user.id } }, 
         tracks: { connect: trackIds.map((id) => ({ id })) },
       },
     });
@@ -39,7 +42,7 @@ router.get(`/:id`, authenticate, async (req, res, next) => {
       include: { tracks: true },
     });
     if (!playlist) return res.status(404).json({ error: `Playlist not found` });
-    if (playlist.ownerId !== req.customer.id) {
+    if (playlist.ownerId !== req.user.id) {
       return res.status(403).json({ error: "Forbidden: You do not own this playlist" });
     }
 

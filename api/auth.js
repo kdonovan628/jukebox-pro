@@ -15,12 +15,18 @@ router.use(async (req, res, next) => {
   const token = authHeader?.slice(7);
   if (!token) return next();
 
+  console.log("Token received:", token);
+
   try {
     const { id } = jwt.verify(token, JWT_SECRET);
-    const customer = await prisma.customer.findUniqueOrThrow({
+    console.log("Decoded user ID:", id);
+    const user = await prisma.user.findUniqueOrThrow({
       where: { id },
     });
-    req.customer = customer; 
+
+    console.log(user)
+    
+    req.user = user; 
     next();
   } catch(error) {
     next(error);
@@ -28,10 +34,10 @@ router.use(async (req, res, next) => {
 });
 
 router.post("/register", async (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
   try {
-    const customer = await prisma.customer.register(email, password);
-    const token = createToken(customer.id);
+    const user = await prisma.user.register(username, password);
+    const token = createToken(user.id);
     res.status(201).json({ token })
   } catch (error) {
     next(error);
@@ -39,18 +45,18 @@ router.post("/register", async (req, res, next) => {
 });
 
 router.post("/login", async (req, res, next) => {
-  const { email, password } = req.body;
+  const { username, password } = req.body;
   try {
-    const customer = await prisma.customer.login(email, password);
-    const token = createToken(customer.id);
-    res.status(201).json({ token })
+    const user = await prisma.user.login(username, password);
+    const token = createToken(user.id);
+    res.json({ token })
   } catch(error) {
     next(error);
   }
 });
 
 function authenticate(req, res, next) { 
-  if (req.customer) {
+  if (req.user) {
     next();
   } else {
     next ({ status: 401, message: " You must be logged in."});
